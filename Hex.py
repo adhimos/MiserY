@@ -22,6 +22,8 @@ class Hex:
     def addSide(self,side):
         self.side.append(side)
         self.sideconnected.append(side)
+    def getSideConnected(self):
+	return self.sideconnected
     def isSide(self,side):
         if side in self.side:
             return True
@@ -82,14 +84,15 @@ def update_board(board,N):
     return False,"EMPTY"
 
 def willLose(board, computerColor, index, N):
-	#Faire comme update_board mais sans changer la couleur
-	board[index].changeColor(computerColor)
-	loses, color = update_board(board,N)
-	if loses and color == computerColor:
-		board[index].changeColor("EMPTY")
-		return True
-	board[index].changeColor("EMPTY")
-	return False
+	update_board(board,N)
+	hex = board[index]
+	sides = []
+	for neigh in hex.getNeighbors():
+		if neigh.getColor() == computerColor:
+			sides.extend(neigh.getSideConnected())
+	sides.extend(hex.getSide())
+	sides = set(sides)
+	return (1 in sides) and (2 in sides) and (3 in sides)
 
 def createBoard(N):
     board={}
@@ -157,27 +160,33 @@ def chooseCorner(board, computerColor, N):
 	print 'Chosen corner: ', corner
 	return cornerStack
 
-def findNextEmpty(board, cornerStack, index):
+def findNextEmpty(board, cornerStack, index, N):
 	hex = board[cornerStack[index]]
-	while hex.getColor() != "EMPTY":
-		hex = board[cornerStack[index]]
+	while hex.getColor() != "EMPTY" and index < N*(N+1)/2 - 1:
 		index = index + 1
+		hex = board[cornerStack[index]]	
+	if hex.getColor() != "EMPTY":
+		print 'Tile not empty.......'	
 	return index
 
 def nextmove(board,computercolor,N):
 	move = 1
 	cornerStack = chooseCorner(board, computercolor, N)
 	if move:
-		losing = True
 		index = 0
+		index = findNextEmpty(board, cornerStack, index, N)
+		losing = willLose(board, computercolor, cornerStack[index], N)
 		hex = board[cornerStack[index]]
-		while losing:
-			index = findNextEmpty(board, cornerStack, index)
-			hex = board[cornerStack[index]]
-			losing = willLose(board, computercolor, cornerStack[index], N)
+		while losing and index < N*(N+1)/2 - 1:
 			index = index + 1
-		print 'Index: ', cornerStack[index - 1]        
+			index = findNextEmpty(board, cornerStack, index, N)
+			hex = board[cornerStack[index]]
+			losing = willLose(board, computercolor, cornerStack[index], N) or hex.getColor()!="EMPTY"
+			print 'Index in loop: ', cornerStack[index], ' will lose: ', losing
+		if losing:
+			print 'Losing'
+			index = findNextEmpty(board, cornerStack, 0, N)
+			hex = board[cornerStack[index]]		
+		print 'Index ', cornerStack[index], ' will lose: ', losing		     
 		hex.changeColor(computercolor)
-        return hex
-
-
+        	return hex
