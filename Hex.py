@@ -160,33 +160,42 @@ def chooseCorner(board, computerColor, N):
 	print 'Chosen corner: ', corner
 	return cornerStack
 
-def findNextEmpty(board, cornerStack, index, N):
+def findNextEmpty(board, cornerStack, N):
+	index = 0
 	hex = board[cornerStack[index]]
 	while hex.getColor() != "EMPTY" and index < N*(N+1)/2 - 1:
 		index = index + 1
 		hex = board[cornerStack[index]]	
-	if hex.getColor() != "EMPTY":
-		print 'Tile not empty.......'	
-	return index
+	return cornerStack[index]
+
+def findEmptyNonLosing(board, cornerStack, N, computerColor):
+	possibleMoves = []
+	for i in cornerStack:
+		hex = board[i]
+		if hex.getColor()=="EMPTY" and not willLose(board, computerColor, i, N):
+			possibleMoves.append(i)
+	return possibleMoves
+
+def findFirstOnSide(board, positions):
+	for i in positions:
+		if len(board[i].getSide())>0:
+			return i
+	return 0
 
 def nextmove(board,computercolor,N):
-	move = 1
 	cornerStack = chooseCorner(board, computercolor, N)
-	if move:
-		index = 0
-		index = findNextEmpty(board, cornerStack, index, N)
-		losing = willLose(board, computercolor, cornerStack[index], N)
-		hex = board[cornerStack[index]]
-		while losing and index < N*(N+1)/2 - 1:
-			index = index + 1
-			index = findNextEmpty(board, cornerStack, index, N)
-			hex = board[cornerStack[index]]
-			losing = willLose(board, computercolor, cornerStack[index], N) or hex.getColor()!="EMPTY"
-			print 'Index in loop: ', cornerStack[index], ' will lose: ', losing
-		if losing:
-			print 'Losing'
-			index = findNextEmpty(board, cornerStack, 0, N)
-			hex = board[cornerStack[index]]		
-		print 'Index ', cornerStack[index], ' will lose: ', losing		     
-		hex.changeColor(computercolor)
-        	return hex
+	possibleMoves = findEmptyNonLosing(board, cornerStack, N, computercolor)
+	if len(possibleMoves)==0:
+		index = findNextEmpty(board, cornerStack, N)
+	else:
+		moveOnSide = findFirstOnSide(board,possibleMoves)
+		if moveOnSide == 0:
+			index = possibleMoves[0]
+		else:
+			index = moveOnSide
+
+	hex = board[index]
+	losing = willLose(board, computercolor, index, N)	
+	print 'Index ', index, ' will lose: ', losing		     
+	hex.changeColor(computercolor)
+	return hex
