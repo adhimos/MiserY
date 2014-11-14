@@ -141,6 +141,9 @@ while continuer:
     ninput=1
     notreset=1
     choosemode=1
+    newbuttonlist=[reset]
+    buttonlist=newbuttonlist
+
 
     vscomputerbool=False
     hexlist=[]
@@ -251,8 +254,7 @@ while continuer:
 
         if finished:
             end=Buttons.Button((255,255,255), windwowsize/2, windwowsize-200, 200,   windwowsize/4 ,    0,        losercolor+" LOSES", (107,142,35))
-            end.draw(fenetre)
-            pygame.display.flip()
+            buttonlist.append(end)
         if vscomputerbool and computercolor=="RED":
             hexnextmove=Hex.nextmove(board,computercolor,N)
             for hexgraph in graphboard.keys():
@@ -284,6 +286,6 @@ while continuer:
         finished,losercolor=Hex.update_board(board,N)
         if finished:
             end=Buttons.Button((255,255,255), windwowsize/2, windwowsize-200, 200,   windwowsize/4 ,    0,        losercolor+" LOSES", (107,142,35))
-            end.draw(fenetre)
-            pygame.display.flip()
+            buttonlist.append(end)
+
     clock.tick(60)
