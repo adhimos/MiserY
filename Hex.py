@@ -122,6 +122,7 @@ def createBoard(N):
     return board
 
 def createCornerStack(corner,N):
+        #create the list of indexes from a corner, along parallel lines from this corner
 	tiles = []
 	if corner == 1:
 		#corresponds to index 1
@@ -144,7 +145,7 @@ def createCornerStack(corner,N):
 	return tiles
 
 def chooseCorner(board, computerColor, N):
-	#we check if there is already a played corner by the computer
+	#we check if there is already a corner played by the computer
 	corner = 1
 	cornerStack = createCornerStack(corner,N)
 	while board[cornerStack[0]].getColor() != computerColor and corner < 3:
@@ -161,6 +162,7 @@ def chooseCorner(board, computerColor, N):
 	return cornerStack
 
 def findNextEmpty(board, cornerStack, N):
+        #it finds the indext of the next empty tile
 	index = 0
 	hex = board[cornerStack[index]]
 	while hex.getColor() != "EMPTY" and index < N*(N+1)/2 - 1:
@@ -169,6 +171,7 @@ def findNextEmpty(board, cornerStack, N):
 	return cornerStack[index]
 
 def findEmptyNonLosing(board, cornerStack, N, computerColor):
+        #constructs the list of non-losing possible moves
 	possibleMoves = []
 	for i in cornerStack:
 		hex = board[i]
@@ -177,6 +180,7 @@ def findEmptyNonLosing(board, cornerStack, N, computerColor):
 	return possibleMoves
 
 def findFirstOnSide(board, positions):
+        #returns the first index in list positions whose tile is on a side of the board
 	for i in positions:
 		if len(board[i].getSide())>0:
 			return i
@@ -184,12 +188,16 @@ def findFirstOnSide(board, positions):
 
 def nextmove(board,computercolor,N):
 	cornerStack = chooseCorner(board, computercolor, N)
+	#compute the possible non-losing moves
 	possibleMoves = findEmptyNonLosing(board, cornerStack, N, computercolor)
 	if len(possibleMoves)==0:
+                #if we lose, we chose the first non-empty tile
 		index = findNextEmpty(board, cornerStack, N)
 	else:
+                #we try to find a non-losing move on a side
 		moveOnSide = findFirstOnSide(board,possibleMoves)
 		if moveOnSide == 0:
+                        #if there is no non-losing move on a side, we take the first non-losing move
 			index = possibleMoves[0]
 		else:
 			index = moveOnSide
