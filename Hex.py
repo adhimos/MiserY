@@ -162,7 +162,7 @@ def findNextEmpty(board, cornerStack, index):
 	while hex.getColor() != "EMPTY":
 		hex = board[cornerStack[index]]
 		index = index + 1
-	return index - 1
+	return index
 
 def nextmove(board,computercolor,N):
 	move = 1

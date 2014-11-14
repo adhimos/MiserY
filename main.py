@@ -142,7 +142,7 @@ while continuer:
     notreset=1
     choosemode=1
 
-    vscomputer=0
+    vscomputerbool=False
     hexlist=[]
     coinlist=[]
     computercolor="BLACK"
@@ -166,13 +166,13 @@ while continuer:
                     red=0
                 elif event.type == MOUSEBUTTONDOWN:
                         if vscomputer.pressed(pygame.mouse.get_pos()):
-                            vscomputer=1
+                            vscomputerbool=True
                             choosemode=0
                         elif vsplayer.pressed(pygame.mouse.get_pos()):
-                            vscomputer=0
+                            vscomputerbool=False
                             choosemode=0
 
-    if vscomputer:
+    if vscomputerbool:
         fenetre.blit(fond, (0,0))
         computerbegins=Buttons.Button((107,142,35), 50, windwowsize/2-windwowsize/8, 200,   windwowsize/4 ,    0,        "COMPUTER BEGINS", (255,255,255))
         playerbegins=Buttons.Button((107,142,35), windwowsize/2+50, windwowsize/2-windwowsize/8, 200,   windwowsize/4 ,    0,        "PLAYER BEGINS", (255,255,255))
@@ -217,7 +217,7 @@ while continuer:
         black=1
         red=1
         refreshboard(fenetre,hexlist,coinlist,buttonlist)
-        if vscomputer and computercolor=="BLACK":
+        if vscomputerbool and computercolor=="BLACK":
             hexnextmove=Hex.nextmove(board,computercolor,N)
             for hexgraph in graphboard.keys():
                 if graphboard[hexgraph].index==hexnextmove.index:
@@ -253,11 +253,11 @@ while continuer:
             end=Buttons.Button((255,255,255), windwowsize/2, windwowsize-200, 200,   windwowsize/4 ,    0,        losercolor+" LOSES", (107,142,35))
             end.draw(fenetre)
             pygame.display.flip()
-        if vscomputer and computercolor=="RED":
+        if vscomputerbool and computercolor=="RED":
             hexnextmove=Hex.nextmove(board,computercolor,N)
             for hexgraph in graphboard.keys():
                 if graphboard[hexgraph].index==hexnextmove.index:
-                    coin=Coin(blackcoin,"RED",hexgraph.persox,hexgraph.persoy)
+                    coin=Coin(redcoin,"RED",hexgraph.persox,hexgraph.persoy)
                     coinlist.append(coin)
         else:
             while red:
